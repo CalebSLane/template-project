@@ -3,6 +3,8 @@
 
 echo "stashing staged changes to preserve them for the commit"
 git commit -m 'husky - Save index' --no-verify  
+echo "creating temp file so there is always something to stash"
+touch huskytemp
 echo "stashing changes not already added for the commit" 
 git stash --include-untracked -m "husky - unstaged changes"
 echo "restoring staged changes from the stash" 
@@ -31,8 +33,8 @@ git add .
 
 echo "restoring the stashed changes" 
 git stash pop
+echo "deleting temp file" 
+rm huskytemp
 
 echo "restoring backed up docker-compose.yml" 
 cp docker-compose.yml.backup docker-compose.yml
-
-EOF

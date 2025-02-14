@@ -4,3 +4,4 @@ docs/generated
 coverage
 .env.backup
 docker-compose.yml.backup
+docker-compose.yml.huskybackup

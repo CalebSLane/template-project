@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "stashing staged changes to preserve them for the commit"
+git commit -m 'husky - Save index' --no-verify  
+echo "stashing changes not already added for the commit" 
+git stash --include-untracked -m "husky - unstaged changes"
+echo "restoring staged changes from the stash" 
+git reset --soft HEAD^
+
+# echo "stashing staged changes to preserve them for the commit"
+# git stash push --staged -m "husky - staged changes"    
+# echo "stashing changes not already added for the commit" 
+# git stash --include-untracked -m "husky - unstaged changes"
+# echo "restoring staged changes from the stash" 
+# git stash pop stash@{1}
+
+echo "backing up docker-compose.yml to docker-compose.yml.backup" 
+cp docker-compose.yml docker-compose.yml.backup
+echo "uncommenting secure lines in docker-compose.yml..." 
+sed -i -E '/#\s*secure/ s/^(\s*)#\s*(.+)/\1\2/' docker-compose.yml
+echo "commenting dev lines in docker-compose.yml..." 
+sed -i -E '/#\s*dev/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
+echo "commenting testcoverage lines in docker-compose.yml..." 
+sed -i -E '/#\s*testcoverage/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
+
+npm run format
+
+echo "adding all files to the commit that were changed by formatting" 
+git add .
+
+echo "restoring the stashed changes" 
+git stash pop
+
+echo "restoring backed up docker-compose.yml" 
+cp docker-compose.yml.backup docker-compose.yml
+
+EOF

@@ -1,0 +1,9 @@
+**/.git
+**/node_modules
+**/target
+**/certbot/www/
+**/certbot/letencrypt/
+**/certbot/www/
+**/logs
+**/docs/generated
+**/coverage

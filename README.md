@@ -15,3 +15,19 @@ Security Scanning (Dependabot, Snyk)
 Monitoring (Grafana, Loki)
 Logging
 Backup
+
+Other technologies in this template project are:
+
+Spring Boot
+NGINX
+React.js
+Postgres
+Keycloak
+
+Principles this project aligns with are:
+
+Secure by default
+Variable reuse
+Caching
+
+To get started run docker compose up -d

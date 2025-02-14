@@ -1,0 +1,15 @@
+server {
+    listen 8080;
+    listen [::]:8080;
+    server_name _;
+
+    location /health {
+        access_log off;
+        return 200 '{"status":"UP"}';
+        add_header Content-Type application/json;
+    }
+
+    location / {
+        return 302 http://app.$host:${NGINX_HTTP_PORT}$request_uri;
+    }
+}

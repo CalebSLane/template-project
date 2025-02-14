@@ -1,0 +1,47 @@
+FROM node:23-alpine AS build
+RUN apk add --no-cache curl 
+WORKDIR /app
+COPY package*.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci
+COPY ./public ./public
+COPY ./src ./src
+RUN npm run build
+
+#Developer runtime 
+FROM build AS dev
+#this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
+ENV PORT=8080
+EXPOSE 8080
+USER node
+CMD ["npm", "start"]
+
+FROM build AS npm-test
+USER node
+CMD ["npm", "test"]
+
+#Run npm tests with coverage
+FROM npm-test AS testcoverage
+USER node
+CMD ["npm", "test", "--", "--coverage"]
+
+FROM nginx:1.27.4-alpine-slim AS runtime
+# needed for helathcheck
+RUN apk add --no-cache curl 
+#removing user directive since we're running the container as non-root
+RUN sed -i 's,user  nginx;,,' /etc/nginx/nginx.conf
+#this allows us to mount just the pid file as a tmpfs that is writeable 
+RUN sed -i 's,/var/run/nginx.pid,/var/run/nginx/nginx.pid,' /etc/nginx/nginx.conf
+WORKDIR /usr/share/nginx/html
+RUN rm -rf ./*
+COPY --from=build /app/build .
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+#this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
+EXPOSE 8080
+USER nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+#Test runtime 
+FROM runtime AS test
+
+#default to production runtime
+FROM runtime AS prod

@@ -2,13 +2,13 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 echo "stashing staged changes to preserve them for the commit"
-git commit -m 'husky - Save index' --no-verify  
+git commit -m 'husky - Save index' --no-verify --quiet
 echo "creating temp file so there is always something to stash"
 touch huskytemp
 echo "stashing changes not already added for the commit" 
-git stash --include-untracked -m "husky - unstaged changes"
+git stash --include-untracked -m "husky - unstaged changes" --quiet
 echo "restoring staged changes from the stash" 
-git reset --soft HEAD^
+git reset --soft HEAD^ --quiet
 
 # in git versions 2.25 and later, the following commands can be used instead of the above commands
 # echo "stashing staged changes to preserve them for the commit"
@@ -27,13 +27,14 @@ sed -i -E '/#\s*dev/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
 echo "commenting testcoverage lines in docker-compose.yml..." 
 sed -i -E '/#\s*testcoverage/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
 
-npm run format
+echo "running format..." 
+npm run --silent format
 
 echo "adding all files to the commit that were changed by formatting" 
-git add .
+git add . 
 
 echo "restoring the stashed changes" 
-git stash pop
+git stash pop --quiet
 echo "deleting temp file" 
 rm huskytemp
 

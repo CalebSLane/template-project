@@ -10,6 +10,7 @@ git stash --include-untracked -m "husky - unstaged changes"
 echo "restoring staged changes from the stash" 
 git reset --soft HEAD^
 
+# in git versions 2.25 and later, the following commands can be used instead of the above commands
 # echo "stashing staged changes to preserve them for the commit"
 # git stash push --staged -m "husky - staged changes"    
 # echo "stashing changes not already added for the commit" 
@@ -17,8 +18,8 @@ git reset --soft HEAD^
 # echo "restoring staged changes from the stash" 
 # git stash pop stash@{1}
 
-echo "backing up docker-compose.yml to docker-compose.yml.backup" 
-cp docker-compose.yml docker-compose.yml.backup
+echo "backing up docker-compose.yml to docker-compose.yml.huskybackup" 
+cp docker-compose.yml docker-compose.yml.huskybackup
 echo "uncommenting secure lines in docker-compose.yml..." 
 sed -i -E '/#\s*secure/ s/^(\s*)#\s*(.+)/\1\2/' docker-compose.yml
 echo "commenting dev lines in docker-compose.yml..." 
@@ -37,4 +38,4 @@ echo "deleting temp file"
 rm huskytemp
 
 echo "restoring backed up docker-compose.yml" 
-cp docker-compose.yml.backup docker-compose.yml
+cp docker-compose.yml.huskybackup docker-compose.yml

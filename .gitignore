@@ -1,0 +1,6 @@
+**/node_modules
+**/logs
+docs/generated
+coverage
+.env.backup
+docker-compose.yml.backup

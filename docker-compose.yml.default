@@ -35,8 +35,8 @@ x-security: &security
 services:
   template-backend:
     <<: *security # secure
-    container_name: template-backend
-    build:
+    container_name: template-backend 
+    build: 
       context: backend
       dockerfile: Dockerfile
       target: ${BACKEND_TARGET}

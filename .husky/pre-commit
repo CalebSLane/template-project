@@ -27,6 +27,11 @@ sed -i -E '/#\s*dev/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
 echo "commenting testcoverage lines in docker-compose.yml..." 
 sed -i -E '/#\s*testcoverage/ s/^(\s*)(#*)(.*)/\1#\3/' docker-compose.yml
 
+echo "backing up .env to .env.huskybackup" 
+cp .env .env.huskybackup
+echo "ensuring default .env is maintained in repo" 
+cp .env.default .env
+
 echo "running format..." 
 npm run --silent format
 
@@ -40,3 +45,5 @@ rm huskytemp
 
 echo "restoring backed up docker-compose.yml" 
 cp docker-compose.yml.huskybackup docker-compose.yml
+echo "restoring backed up .env" 
+cp .env.huskybackup .env

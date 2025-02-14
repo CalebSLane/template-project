@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "stashing staged changes to preserve them for the commit"
+echo "committing staged changes to preserve them for the real commit"
 git commit -m 'husky - Save index' --no-verify --quiet
 echo "creating temp file so there is always something to stash"
 touch huskytemp
 echo "stashing changes not already added for the commit" 
 git stash --include-untracked -m "husky - unstaged changes" --quiet
-echo "restoring staged changes from the stash" 
+echo "restoring staged changes from the temp commit" 
 git reset --soft HEAD^ --quiet
 
 # in git versions 2.25 and later, the following commands can be used instead of the above commands

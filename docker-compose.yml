@@ -33,7 +33,7 @@ x-security: &security
   privileged: false
 
 services:
-  template-backend:
+  api.web.api:
     <<: *security # secure
     container_name: template-backend
     build:
@@ -50,12 +50,12 @@ services:
       - type: tmpfs
         target: /root/.m2
       - ./backend/backend-healthcheck.sh:/healthcheck.sh:ro
-      #- ./docs/backend/:/docs/:rw # testcoverage
-      #- ./coverage/backend/:/coverage/:rw # testcoverage
+      # - ./docs/backend/:/docs/:rw # testcoverage
+      # - ./coverage/backend/:/coverage/:rw # testcoverage
     logging: *local-logging
     healthcheck: *healthcheck
 
-  template-frontend:
+  app.web.app:
     <<: *security # secure
     container_name: template-frontend
     build:
@@ -88,7 +88,7 @@ services:
           size: 10m
       # - ./frontend/src/:/app/src:ro # dev
       # - ./frontend/public/:/app/public:ro # dev
-      #- ./coverage/frontend/:/app/coverage/:rw # testcoverage
+      # - ./coverage/frontend/:/app/coverage/:rw # testcoverage
       - ./frontend/frontend-healthcheck.sh:/healthcheck.sh:ro
     logging: *local-logging
     healthcheck: *healthcheck
@@ -122,7 +122,8 @@ services:
         target: /var/run/nginx/
         tmpfs:
           size: 10m
-      - ./proxy/${NGINX_CONF}/conf.d/:/etc/nginx/templates/:ro
+      - ./proxy/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./proxy/conf.d/templates/${PUBLIC_SERVER_PROTOCOL}:/etc/nginx/templates/generated:ro
       - ./proxy/proxy-healthcheck.sh:/healthcheck.sh:ro
       - ./certbot/www/:/var/www/certbot/:ro
     logging: *local-logging

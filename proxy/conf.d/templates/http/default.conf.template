@@ -10,6 +10,6 @@ server {
     }
 
     location / {
-        return 302 http://app.$host:${NGINX_HTTP_PORT}$request_uri;
+        return 302 ${PUBLIC_APP_WEB_ADDRESS}$request_uri;
     }
 }

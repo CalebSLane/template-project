@@ -1,0 +1,10 @@
+server {
+    listen          8080;
+    listen          [::]:8080;
+    server_name     ${API_WEB_SUBDOMAIN}.*;
+
+    location / {
+        proxy_pass  ${PRIVATE_API_WEB_ADDRESS};
+    }
+}
+

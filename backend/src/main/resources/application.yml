@@ -1,0 +1,7 @@
+server:
+  tomcat:
+    basedir: /tmp/tomcat
+
+spring:
+  application:
+    name: template-backend

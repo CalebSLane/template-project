@@ -1,6 +1,7 @@
 **/.git
 **/node_modules
 **/target
+**/backups
 **/certbot/www/
 **/certbot/letencrypt/
 **/logs

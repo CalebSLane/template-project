@@ -2,5 +2,6 @@
 **/logs
 docs/generated
 coverage
+backups
 docker-compose.yml.backup
 *.huskybackup

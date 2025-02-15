@@ -1,6 +1,6 @@
-This is a template project for a full stack application with a focus on automated processes to help many key processes that should be involved in any project. All of these processes have competitors in their space that could be used instead, but before removing components ensure that an alternative is first created.
+This is a template-project for a full stack application with a focus on automated processes to help many key processes that should be involved in any project. All of these processes have competitors in their space that could be used instead, but before removing components ensure that an alternative is first created.
 
-In particular this template tries to cover:
+In particular this template-project tries to cover:
 
 Hooks (Husky)
 Code Styling (Prettier)
@@ -16,7 +16,7 @@ Monitoring (Grafana, Loki)
 Logging
 Backup
 
-Other technologies in this template project are:
+Other technologies in this template-project are:
 
 Spring Boot
 NGINX

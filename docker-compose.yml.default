@@ -125,7 +125,7 @@ services:
       - ./proxy/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./proxy/conf.d/templates/${PUBLIC_SERVER_PROTOCOL}:/etc/nginx/templates/generated:ro
       - ./proxy/proxy-healthcheck.sh:/healthcheck.sh:ro
-      - ./certbot/www/:/var/www/certbot/:ro
+      - /certbot/www/:/var/www/certbot/:ro
     logging: *local-logging
     healthcheck: *healthcheck
 
@@ -147,9 +147,9 @@ services:
     volumes:
       - type: tmpfs
         target: /tmp
-      - ./certbot/www/:/var/www/certbot/:rw
-      - ./certbot/letencrypt:/etc/letsencrypt/:rw
-      - ./certbot/logs:/var/log/letsencrypt:rw
+      - /certbot/www/:/var/www/certbot/:rw
+      - /certbot/letencrypt:/etc/letsencrypt/:rw
+      - /certbot/logs:/var/log/letsencrypt:rw
       - ./certbot/certbot-healthcheck.sh:/healthcheck.sh:ro
     logging: *local-logging
     healthcheck: *healthcheck

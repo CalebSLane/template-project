@@ -17,6 +17,11 @@ public class TemplateApplication {
     return "Hello World!";
   }
 
+  @RequestMapping("/secure")
+  String secureHome() {
+    return "Hello Secure World!";
+  }
+
   public static void main(String[] args) {
     SpringApplication.run(TemplateApplication.class, args);
   }

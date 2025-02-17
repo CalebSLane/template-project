@@ -1,4 +1,4 @@
-FROM nginx:1.27.4-alpine-slim AS runtime
+FROM nginx:1.27.4-alpine3.21-slim AS runtime
 RUN apk add --no-cache curl 
 #removing user directive since we're running the container as non-root
 RUN sed -i 's,user  nginx;,,' /etc/nginx/nginx.conf

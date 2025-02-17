@@ -4,9 +4,9 @@ error_occurred=0
 
 docker_compose_has_changes=false
 docker_compose_backed_up=true
-cmp --silent docker-compose.yml.default docker-compose.yml || docker_compose_has_changes=true
+cmp --silent default.docker-compose.yml docker-compose.yml || docker_compose_has_changes=true
 if [ "$docker_compose_has_changes" = true ]; then
-  echo "docker-compose.yml has changed from docker-compose.yml.default" 
+  echo "docker-compose.yml has changed from default.docker-compose.yml" 
   cmp --silent docker-compose.yml.huskybackup docker-compose.yml || docker_compose_backed_up=false
   if [ "$docker_compose_backed_up" = true ]; then
     echo "docker-compose.yml has changes that are already backed up in a docker-compose.yml.huskybackup. ignoring." 
@@ -19,15 +19,15 @@ if [ "$docker_compose_has_changes" = true ]; then
     cp docker-compose.yml docker-compose.yml.huskybackup || error_occurred=1
   fi
   echo "ensuring default docker-compose.yml is maintained in repo" 
-  cp docker-compose.yml.default docker-compose.yml || error_occurred=1
+  cp default.docker-compose.yml docker-compose.yml || error_occurred=1
   git add docker-compose.yml
 fi
 
 env_has_changes=false
 env_backed_up=true
-cmp --silent .env.default .env || env_has_changes=true
+cmp --silent default.env .env || env_has_changes=true
 if [ "$env_has_changes" = true ]; then
-  echo ".env has changed from .env.default" 
+  echo ".env has changed from default.env" 
   cmp --silent .env.huskybackup .env || env_backed_up=false
   if [ "$env_backed_up" = true ]; then
     echo ".env has changes that are already backed up in a .env.huskybackup. ignoring." 
@@ -40,7 +40,7 @@ if [ "$env_has_changes" = true ]; then
     cp .env .env.huskybackup || error_occurred=1
   fi
   echo "ensuring default .env is maintained in repo" 
-  cp .env.default .env || error_occurred=1
+  cp default.env .env || error_occurred=1
   git add .env
 fi
 

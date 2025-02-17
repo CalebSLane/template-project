@@ -1,4 +1,4 @@
-FROM node:23-alpine AS build
+FROM node:23.8.0-alpine3.21 AS build
 RUN apk add --no-cache curl 
 WORKDIR /app
 COPY package*.json ./

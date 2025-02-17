@@ -13,6 +13,7 @@ export default [
       '**/build',
       '**/logs',
       '**/backups',
+      'data',
       'docs/generated',
       'coverage',
     ],

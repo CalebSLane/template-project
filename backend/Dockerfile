@@ -25,7 +25,7 @@ FROM mvn-test-all AS testcoverage
 CMD ["mvn", "clean", "verify"]
 
 #Production runtime 
-FROM eclipse-temurin:21-alpine AS runtime
+FROM eclipse-temurin:21.0.6_7-jre-alpine-3.21 AS runtime
 # needed for helathcheck
 RUN apk add --no-cache curl 
 WORKDIR /

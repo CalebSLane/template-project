@@ -4,7 +4,15 @@ server {
     server_name     ${API_WEB_SUBDOMAIN}.*;
 
     location / {
-        proxy_pass  ${PRIVATE_API_WEB_ADDRESS};
+        resolver 127.0.0.11 valid=30s;
+        set $upstream_api "${PRIVATE_API_WEB_ADDRESS}";
+        proxy_pass  $upstream_api;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
     }
 }
 

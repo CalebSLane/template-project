@@ -5,3 +5,18 @@ server:
 spring:
   application:
     name: template-backend
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${PUBLIC_AUTH_WEB_ADDRESS}/realms/${PROJECT_NAME}/protocol/openid-connect/certs
+      client:
+        registration:
+          keycloak:
+            client-id: client-template
+            client-secret: ${BACKEND_CLIENT_SECRET}
+            scope: openid,profile,email
+            redirect-uri: ${PUBLIC_API_WEB_ADDRESS}/login/oauth2/code/keycloak
+        provider:
+          keycloak:
+            issuer-uri: ${PUBLIC_AUTH_WEB_ADDRESS}/realms/${PROJECT_NAME}

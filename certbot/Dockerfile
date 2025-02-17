@@ -1,4 +1,4 @@
-FROM certbot/certbot:v3.1.0 AS runtime
+FROM certbot/certbot:v3.2.0 AS runtime
 
 FROM runtime AS dev
 

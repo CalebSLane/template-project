@@ -2,8 +2,9 @@
 **/node_modules
 **/target
 **/backups
-**/certbot/www/
-**/certbot/letencrypt/
+data
+certbot/www/
+certbot/letencrypt/
 **/logs
-**/docs/generated
-**/coverage
+docs/generated
+coverage

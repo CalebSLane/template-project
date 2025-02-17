@@ -35,14 +35,23 @@ x-security: &security
 services:
   api.web.api:
     <<: *security # secure
-    container_name: template-backend
+    container_name: backend-template
     build:
       context: backend
       dockerfile: Dockerfile
       target: ${BACKEND_TARGET}
-    image: template-backend:latest
+    image: backend-template:latest
+    depends_on:
+      auth.web.auth:
+        condition: service_healthy
+        restart: true
     networks:
-      - frontend
+      frontend:
+        aliases:
+          - api.web.${PUBLIC_SERVER_DOMAIN}
+      backend:
+        aliases:
+          - api.web.${PUBLIC_SERVER_DOMAIN}
     env_file: '.env'
     volumes:
       - type: tmpfs
@@ -57,14 +66,16 @@ services:
 
   app.web.app:
     <<: *security # secure
-    container_name: template-frontend
+    container_name: frontend-template
     build:
       context: frontend
       dockerfile: Dockerfile
       target: ${FRONTEND_TARGET}
-    image: template-frontend:latest
+    image: frontend-template:latest
     networks:
-      - frontend
+      frontend:
+        aliases:
+          - app.web.${PUBLIC_SERVER_DOMAIN}
     env_file: '.env'
     volumes:
       # - type: tmpfs # dev
@@ -93,6 +104,91 @@ services:
     logging: *local-logging
     healthcheck: *healthcheck
 
+  auth.web.auth:
+    <<: *security # secure
+    container_name: auth
+    build:
+      context: auth
+      dockerfile: Dockerfile
+      target: ${AUTH_TARGET}
+      args:
+        KC_DB_ARG: ${KC_DB}
+        #KC_DB_DRIVER_ARG: ${KC_DB_DRIVER}
+        #KC_TRANSACTION_XA_ENABLED_ARG: ${KC_TRANSACTION_XA_ENABLED}
+        #KC_FEATURES_ARG: ${KC_FEATURES}
+        #KC_FEATURES_DISABLED_ARG: ${KC_FEATURES_DISABLED}
+        #KC_HTTP_RELATIVE_PATH_ARG: ${KC_HTTP_RELATIVE_PATH}
+        #KC_HTTPS_CLIENT_AUTH_ARG: ${KC_HTTPS_CLIENT_AUTH}
+        KC_HEALTH_ENABLED_ARG: ${KC_HEALTH_ENABLED}
+        #KC_HTTP_MANAGEMENT_RELATIVE_PATH_ARG: ${KC_HTTP_MANAGEMENT_RELATIVE_PATH
+        #KC_HTTPS_MANAGEMENT_CLIENT_AUTH_ARG: ${KC_HTTPS_MANAGEMENT_CLIENT_AUTH}
+        KC_METRICS_ENABLED_ARG: ${KC_METRICS_ENABLED}
+        #KC_VAULT_ARG: ${KC_VAULT}
+        #KC_TRACING_ENABLED_ARG: ${KC_TRACING_ENABLED}
+        #KC_TRACING_JDBC_ENABLED_ARG: ${KC_TRACING_JDBC_ENABLED}
+        #KC_TRACING_SAMPLER_TYPE_ARG: ${KC_TRACING_SAMPLER_TYPE}
+        #KC_EVENT_METRICS_USER_ENABLED_ARG: ${KC_EVENT_METRICS_USER_ENABLED}
+        # KC_FIPS_MODE_ARG: ${KC_FIPS_MODE}
+    image: auth:latest
+    depends_on:
+      authdb:
+        condition: service_healthy
+        restart: true
+    networks:
+      frontend:
+        aliases:
+          - auth.web.${PUBLIC_SERVER_DOMAIN}
+      backend:
+        aliases:
+          - auth.web.${PUBLIC_SERVER_DOMAIN}
+    env_file: '.env'
+    command:
+      - start-dev
+      - --import-realm
+      - --optimized
+    volumes:
+      - type: tmpfs
+        target: /tmp/vertx-cache
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /tmp/uploads
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /opt/keycloak/data/transaction-logs/ShadowNoFileLockStore/defaultStore/
+        tmpfs:
+          size: 10m
+      - ./auth/auth-healthcheck.sh:/healthcheck.sh:ro
+      - ./auth/realms/:/opt/keycloak/data/import:ro
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  authdb:
+    <<: *security # secure
+    container_name: authdb
+    build:
+      context: authdb
+      dockerfile: Dockerfile
+      target: ${AUTHDB_TARGET}
+    image: authdb:latest
+    networks:
+      - backend
+    env_file: '.env'
+    volumes:
+      - type: tmpfs
+        target: /run/postgresql/
+        tmpfs:
+          size: 10m
+      - type: tmpfs
+        target: /tmp/
+        tmpfs:
+          size: 10m
+      - authdb-data:/var/lib/postgresql/data:rw
+      - ./authdb/authdb-healthcheck.sh:/healthcheck.sh:ro
+    logging: *local-logging
+    healthcheck: *healthcheck
+
   proxy:
     <<: *security # secure
     container_name: proxy
@@ -105,7 +201,9 @@ services:
       - ${NGINX_HTTP_PORT}:8080
       - ${NGINX_HTTPS_PORT}:8443
     networks:
-      - frontend
+      frontend:
+        aliases:
+          - proxy.web.${PUBLIC_SERVER_DOMAIN}
     env_file: '.env'
     volumes:
       - type: tmpfs
@@ -125,7 +223,7 @@ services:
       - ./proxy/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./proxy/conf.d/templates/${PUBLIC_SERVER_PROTOCOL}:/etc/nginx/templates/generated:ro
       - ./proxy/proxy-healthcheck.sh:/healthcheck.sh:ro
-      - /template-project/certbot/www/:/var/www/certbot/:ro
+      - /${PROJECT_NAME}/certbot/www/:/var/www/certbot/:ro
     logging: *local-logging
     healthcheck: *healthcheck
 
@@ -147,9 +245,9 @@ services:
     volumes:
       - type: tmpfs
         target: /tmp
-      - /template-project/certbot/www/:/var/www/certbot/:rw
-      - /template-project/certbot/letencrypt:/etc/letsencrypt/:rw
-      - /template-project/certbot/logs:/var/log/letsencrypt:rw
+      - /${PROJECT_NAME}/certbot/www/:/var/www/certbot/:rw
+      - /${PROJECT_NAME}/certbot/letencrypt:/etc/letsencrypt/:rw
+      - /${PROJECT_NAME}/certbot/logs:/var/log/letsencrypt:rw
       - ./certbot/certbot-healthcheck.sh:/healthcheck.sh:ro
     logging: *local-logging
     healthcheck: *healthcheck
@@ -159,3 +257,6 @@ networks:
     driver: bridge
   backend:
     driver: bridge
+
+volumes:
+  authdb-data:

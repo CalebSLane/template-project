@@ -24,7 +24,6 @@ CMD ["mvn", "clean", "verify", "-Djacoco.skip=true"]
 FROM mvn-test-all AS testcoverage
 CMD ["mvn", "clean", "verify"]
 
-#Production runtime 
 FROM eclipse-temurin:21.0.6_7-jre-alpine-3.21 AS runtime
 # needed for helathcheck
 RUN apk add --no-cache curl 
@@ -33,6 +32,9 @@ ENV SPRING_PROFILES_ACTIVE=prod
 COPY --from=build /build/target/*.jar /app.jar
 RUN mkdir /tmp/tomcat static
 EXPOSE 8080 
+RUN adduser -D backend_template_user
+RUN addgroup backend_template_group
+USER backend_template_user
 # Run the application
 CMD ["java", "-jar", "app.jar"]
 
@@ -44,7 +46,5 @@ ENV SPRING_PROFILES_ACTIVE=dev
 FROM runtime AS test
 ENV SPRING_PROFILES_ACTIVE=test
 
-#default to production runtime
+#Production runtime 
 FROM runtime AS prod
-RUN adduser -D backend_template_user
-USER backend_template_user

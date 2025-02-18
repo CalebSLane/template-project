@@ -6,22 +6,20 @@ RUN --mount=type=cache,target=/root/.npm npm ci
 COPY ./public ./public
 COPY ./src ./src
 RUN npm run build
+USER node
 
 #Developer runtime 
 FROM build AS dev
 #this allows us to run the container as a non-root user with fewer capabilities by using non-privileged ports
 ENV PORT=8080
 EXPOSE 8080
-USER node
 CMD ["npm", "start"]
 
 FROM build AS npm-test
-USER node
 CMD ["npm", "test"]
 
 #Run npm tests with coverage
 FROM npm-test AS testcoverage
-USER node
 CMD ["npm", "test", "--", "--coverage"]
 
 FROM nginx:1.27.4-alpine-slim AS runtime

@@ -1,4 +1,6 @@
 FROM certbot/certbot:v3.2.0 AS runtime
+RUN adduser -D certbot_user
+RUN addgroup certbot_group
 
 FROM runtime AS dev
 
@@ -9,5 +11,4 @@ CMD [ "exit" ]
 FROM runtime AS test
 
 FROM runtime AS prod
-RUN adduser -D certbot_user
 USER certbot_user

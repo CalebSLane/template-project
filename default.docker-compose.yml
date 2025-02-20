@@ -31,6 +31,8 @@ x-security: &security
   read_only: true
   pull_policy: always
   privileged: false
+  init: true
+  restart: unless-stopped
 
 services:
   api.web.api:
@@ -42,6 +44,8 @@ services:
       target: ${BACKEND_TARGET}
     image: backend-template:latest
     depends_on:
+      vault.post.init:
+        condition: service_completed_successfully
       auth.web.auth:
         condition: service_healthy
         restart: true
@@ -56,8 +60,8 @@ services:
     volumes:
       - type: tmpfs
         target: /tmp/tomcat
-      - type: tmpfs
-        target: /root/.m2
+      # - type: tmpfs # testcoverage
+      #   target: /root/.m2 # testcoverage
       - ./backend/backend-healthcheck.sh:/healthcheck.sh:ro
       # - ./docs/backend/:/docs/:rw # testcoverage
       # - ./coverage/backend/:/coverage/:rw # testcoverage
@@ -72,6 +76,9 @@ services:
       dockerfile: Dockerfile
       target: ${FRONTEND_TARGET}
     image: frontend-template:latest
+    depends_on:
+      vault.post.init:
+        condition: service_completed_successfully
     networks:
       frontend:
         aliases:
@@ -131,6 +138,8 @@ services:
         # KC_FIPS_MODE_ARG: ${KC_FIPS_MODE}
     image: auth:latest
     depends_on:
+      vault.post.init:
+        condition: service_completed_successfully
       authdb:
         condition: service_healthy
         restart: true
@@ -141,7 +150,8 @@ services:
       backend:
         aliases:
           - auth.web.${PUBLIC_SERVER_DOMAIN}
-    env_file: '.env'
+    env_file:
+      - '.env'
     command:
       - start-dev
       - --import-realm
@@ -172,6 +182,9 @@ services:
       dockerfile: Dockerfile
       target: ${AUTHDB_TARGET}
     image: authdb:latest
+    depends_on:
+      vault.post.init:
+        condition: service_completed_successfully
     networks:
       - backend
     env_file: '.env'
@@ -188,6 +201,55 @@ services:
       - ./authdb/authdb-healthcheck.sh:/healthcheck.sh:ro
     logging: *local-logging
     healthcheck: *healthcheck
+
+  vault.web.vault:
+    # <<: *security # secure
+    container_name: vault
+    build:
+      context: vault
+      dockerfile: Dockerfile
+      target: ${VAULT_TARGET}
+    image: vault:latest
+    networks:
+      frontend:
+        aliases:
+          - vault.web.${PUBLIC_SERVER_DOMAIN}
+      backend:
+        aliases:
+          - vault.web.${PUBLIC_SERVER_DOMAIN}
+    env_file: '.env'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-data:/vault/file:rw
+      - ./vault/config:/vault/config:ro # secure
+      - ./vault/vault-healthcheck.sh:/healthcheck.sh:ro
+    command: 'vault server -config=/vault/config/vault-config.json' # secure
+    # command: 'vault server -dev -dev-root-token-id="dev-only-token" -config=/vault/config/vault-config.json' # dev
+    logging: *local-logging
+    healthcheck: *healthcheck
+
+  vault.post.init:
+    container_name: vault.post.init
+    build:
+      context: vault
+      dockerfile: Dockerfile
+      target: ${VAULT_TARGET}
+    image: vault:latest
+    depends_on:
+      vault.web.vault:
+        condition: service_healthy
+        restart: true
+    networks:
+      - backend
+    env_file:
+      - '.env'
+      - '.env.secret'
+    volumes:
+      - ./vault/vault-init.sh:/vault-init.sh:ro
+      - ./vault/shared-policy.txt:/shared-policy:ro
+    entrypoint: sh -c "/vault-init.sh"
+    logging: *local-logging
 
   proxy:
     <<: *security # secure
@@ -238,10 +300,6 @@ services:
     networks:
       - backend
     env_file: '.env'
-    command: >-
-      certonly --reinstall --webroot --webroot-path=/var/www/certbot
-      --email ${EMAIL} --agree-tos --no-eff-email --dry-run
-      -d ${DOMAIN}
     volumes:
       - type: tmpfs
         target: /tmp
@@ -249,6 +307,10 @@ services:
       - /${PROJECT_NAME}/certbot/letencrypt:/etc/letsencrypt/:rw
       - /${PROJECT_NAME}/certbot/logs:/var/log/letsencrypt:rw
       - ./certbot/certbot-healthcheck.sh:/healthcheck.sh:ro
+    command: >-
+      certonly --reinstall --webroot --webroot-path=/var/www/certbot
+      --email ${EMAIL} --agree-tos --no-eff-email --dry-run
+      -d ${DOMAIN}
     logging: *local-logging
     healthcheck: *healthcheck
 
@@ -260,3 +322,4 @@ networks:
 
 volumes:
   authdb-data:
+  vault-data:

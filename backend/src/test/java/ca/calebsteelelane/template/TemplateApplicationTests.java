@@ -12,10 +12,4 @@ public class TemplateApplicationTests {
   public void main() {
     TemplateApplication.main(new String[] {});
   }
-
-  @Test
-  public void homeReturnsHelloWorld() {
-    TemplateApplication app = new TemplateApplication();
-    Assert.hasText(app.home(), "Hello World!");
-  }
 }

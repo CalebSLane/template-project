@@ -1,21 +1,21 @@
 server {
     listen          8080;
     listen          [::]:8080;
-    server_name     ${AUTH_WEB_SUBDOMAIN}.*;
+    server_name     ${VAULT_WEB_SUBDOMAIN}.*;
 
     location /.well-known/acme-challenge/ {
             root /var/www/certbot;
     }
 
     location / {
-        return 302 ${PUBLIC_AUTH_WEB_ADDRESS}$request_uri;
+        return 302 ${PUBLIC_VAULT_WEB_ADDRESS}$request_uri;
     }
 }
 
 server {
     listen          8443 ssl;
     listen          [::]:8443 ssl;
-    server_name     ${AUTH_WEB_SUBDOMAIN}.*;
+    server_name     ${VAULT_WEB_SUBDOMAIN}.*;
     include ./conf.d/ssl/ssl.conf; 
 
     location /.well-known/acme-challenge/ {
@@ -24,8 +24,8 @@ server {
 
     location / {
         resolver 127.0.0.11 valid=30s;
-        set $upstream_auth "${PRIVATE_AUTH_WEB_ADDRESS}";
-        proxy_pass  $upstream_auth;
+        set $upstream_vault "${PRIVATE_VAULT_WEB_ADDRESS}";
+        proxy_pass  $upstream_vault;
         
         proxy_redirect off;
         proxy_set_header Host $host;

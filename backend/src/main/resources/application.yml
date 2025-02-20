@@ -5,6 +5,16 @@ server:
 spring:
   application:
     name: template-backend
+  cloud:
+    vault:
+      uri: ${PUBLIC_VAULT_WEB_ADDRESS}
+      token: ${SHARED_VAULT_TOKEN}
+      kv:
+        enabled: true
+        backend: shared
+        default-context: 'project-template'
+  config:
+    import: vault://
   security:
     oauth2:
       resourceserver:
@@ -14,7 +24,7 @@ spring:
         registration:
           keycloak:
             client-id: client-template
-            client-secret: ${BACKEND_CLIENT_SECRET}
+            # client-secret: ${BACKEND_CLIENT_SECRET}
             scope: openid,profile,email
             redirect-uri: ${PUBLIC_API_WEB_ADDRESS}/login/oauth2/code/keycloak
         provider:

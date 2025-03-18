@@ -224,7 +224,6 @@ services:
       - vault-data:/vault/file:rw
       - ./vault/config:/vault/config:ro # secure
       - ./vault/vault-healthcheck.sh:/healthcheck.sh:ro
-    command: 'vault server -config=/vault/config/vault-config.json' # secure
     # command: 'vault server -dev -dev-root-token-id="dev-only-token" -config=/vault/config/vault-config.json' # dev
     logging: *local-logging
     healthcheck: *healthcheck

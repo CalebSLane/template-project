@@ -1,9 +1,34 @@
 package ca.calebsteelelane.template;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * TemplateController is a REST controller that handles HTTP requests for the application.
+ * It provides endpoints for both public and secure access.
+ *
+ * <p>Endpoints:
+ * <ul>
+ *   <li>{@code /} - Returns a greeting message "Hello World!"</li>
+ *   <li>{@code /secure} - Returns a secure greeting message "Hello Secure World!"</li>
+ * </ul>
+ * </p>
+ *
+ * <p>Example usage:
+ * <pre>
+ * {@code
+ * // Access the public endpoint
+ * GET http://localhost:8080/
+ *
+ * // Access the secure endpoint
+ * GET http://localhost:8080/secure
+ * }
+ * </pre>
+ * </p>
+ *
+ * @see org.springframework.web.bind.annotation.RestController
+ * @see org.springframework.web.bind.annotation.RequestMapping
+ */
 @RestController
 public class TemplateController {
 
@@ -14,6 +39,6 @@ public class TemplateController {
 
   @RequestMapping("/secure")
   String secureHome() {
-    return "Hello World!";
+    return "Hello Secure World!";
   }
 }

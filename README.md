@@ -30,4 +30,10 @@ Secure by default
 Variable reuse
 Caching
 
+Security principles:
+minimal docker images
+run containers as a non-root user
+hardened containers
+healthchecks
+
 To get started run docker compose up -d

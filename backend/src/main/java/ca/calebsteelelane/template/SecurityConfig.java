@@ -6,6 +6,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration class that sets up custom security coinfiguration
+ * for handling HTTP requests such as OAuth2 login, and logout.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -35,7 +39,7 @@ public class SecurityConfig {
       .oauth2Login(
         oauth2 ->
           oauth2
-            .loginPage("/oauth2/authorization/keycloak") // Sets custom login page for OAuth2 with Keycloak
+            .loginPage("/oauth2/authorization/keycloak") // Sets login page for OAuth2 Keycloak
             .defaultSuccessUrl("/secure", true) // Redirects to "/menu" after successful login
       )
       // Configures logout settings

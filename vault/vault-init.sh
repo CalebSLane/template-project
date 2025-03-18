@@ -1,4 +1,9 @@
 #! /bin/sh
+if [${ENV} == "testcoverage"]; then
+    echo "Skipping healthcheck for test coverage"
+    exit 0
+fi
+
 set -e
 if [ -z "${ROOT_VAULT_TOKEN}" ]; then
     echo "variable ROOT_VAULT_TOKEN is empty so program will exit now!"

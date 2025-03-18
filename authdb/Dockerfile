@@ -16,9 +16,10 @@ FROM runtime AS dev
 
 #this container does not need to run for testcoverage
 FROM runtime AS testcoverage
-CMD [ "exit" ]
+CMD [ ]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
 
-FROM runtime AS test
+FROM runtime AS staging
 
 FROM runtime AS prod
 

@@ -52,6 +52,7 @@ COPY --from=ubi-micro-build /mnt/rootfs /
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 COPY ./auth-entrypoint.sh /auth-entrypoint.sh
 USER keycloak
+CMD [ "start-dev", "--import-realm", "--optimized" ]
 ENTRYPOINT ["/auth-entrypoint.sh"]
 # ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 
@@ -59,8 +60,9 @@ FROM runtime AS dev
 
 #this container does not need to run for testcoverage
 FROM runtime AS testcoverage
-CMD [ "exit" ]
+CMD [ ]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
 
-FROM runtime AS test
+FROM runtime AS staging
 
 FROM runtime AS prod

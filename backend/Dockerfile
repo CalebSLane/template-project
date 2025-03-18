@@ -6,7 +6,7 @@ RUN --mount=type=cache,target=/root/.m2 \
     mvn dependency:go-offline
 COPY src /build/src/
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn package -DskipTests
+    mvn package -DskipTests -Djacoco.skip=true
 
 #Run maven tests (Unit)
 FROM build AS mvn-test
@@ -14,7 +14,7 @@ CMD ["mvn", "clean", "test", "-Djacoco.skip=true"]
 
 #Run maven tests (Integration)
 FROM build AS mvn-verify
-CMD ["mvn", "clean", "verify", "-DskipTests", "-Djacoco.skip=true"]
+CMD ["mvn", "clean", "verify", "-Dskip.ut=true", "-Djacoco.skip=true"]
 
 #Run maven tests (Unit and Integration)
 FROM build AS mvn-test-all
@@ -43,7 +43,7 @@ FROM runtime AS dev
 ENV SPRING_PROFILES_ACTIVE=dev
 
 #Test runtime (extension of production runtime)
-FROM runtime AS test
+FROM runtime AS staging
 ENV SPRING_PROFILES_ACTIVE=test
 
 #Production runtime 

@@ -39,7 +39,7 @@ USER nginx
 CMD ["nginx", "-g", "daemon off;"]
 
 #Test runtime 
-FROM runtime AS test
+FROM runtime AS staging
 
 #default to production runtime
 FROM runtime AS prod

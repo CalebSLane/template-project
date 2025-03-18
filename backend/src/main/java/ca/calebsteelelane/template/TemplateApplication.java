@@ -1,10 +1,7 @@
 package ca.calebsteelelane.template;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Main application class for the Template application.
@@ -12,6 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication
 public class TemplateApplication {
 
+  /**
+   * The entry point of the Spring Boot application.
+   *
+   * @param args command-line arguments passed to the application
+   */
   public static void main(String[] args) {
     SpringApplication.run(TemplateApplication.class, args);
   }

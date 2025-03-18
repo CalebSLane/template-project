@@ -3,17 +3,29 @@ This is a template-project for a full stack application with a focus on automate
 In particular this template-project tries to cover:
 
 Hooks (Husky)
+
 Code Styling (Prettier)
+
 Linting (Checkstyle, ESLint)
+
 Build Automation (Maven, Docker)
-Continuous Integration (GitHub Actions)
+
 Testing (JUnit, Cypress, Jest)
+
 Coverage (Jacoco. Jest)
+
 Documentation (JavaDocs)
+
 Containerization (Docker)
+
+In future it should also cover:
+
+Continuous Integration (GitHub Actions)
+
 Security Scanning (Dependabot, Snyk)
+
 Monitoring (Grafana, Loki)
-Logging
+
 Backup
 
 Other technologies in this template-project are:
@@ -28,7 +40,7 @@ Principles this project aligns with are:
 
 Secure by default
 Variable reuse
-Caching
+Caching builds
 
 Security principles:
 minimal docker images
